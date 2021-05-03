@@ -3,6 +3,8 @@ extends Node2D
 onready var road = preload("res://Scenes/road.tscn")
 onready var ene_car = preload("res://Scenes/ene_car.tscn")
 onready var explosion = preload("res://Scenes/explosive.tscn")
+onready var camera = $Camera2D
+
 var car_timer = 0
 var time = 74
 var crash_time = 0
@@ -20,10 +22,16 @@ func _process(delta):
 		time = 0
 
 func _on_player_car_area_entered(area):
-#	crash_time += 1
+	camera.set_shake(true)
+	OS.delay_msec(200)
+	explosion()
+	yield(get_tree().create_timer(0.4), "timeout")
+	game_over()
+
+func explosion():
 	var car_crash = explosion.instance()
-#	get_tree().paused
 	car_crash.position = get_node("player_car").position
 	add_child(car_crash)
-	yield(get_tree().create_timer(0.3), "timeout")
+	
+func game_over():
 	get_tree().change_scene("res://Scenes/game_over.tscn")
